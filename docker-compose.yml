@@ -66,6 +66,7 @@ services:
       - monitoring
 
   mysql-exporter:
+    container_name: mysql-exporter
     image: prom/mysqld-exporter
     environment:
       - DATA_SOURCE_NAME=${WORDPRESS_DB_USER}:${WORDPRESS_DB_PASSWORD}@tcp(db:3306)/${WORDPRESS_DB_NAME}
@@ -73,6 +74,12 @@ services:
       - "9104:9104"
     networks:
       - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mysql-exporter.rule=Host(`mysql-exporter.${WORDPRESS_DOMAIN}`)"
+      - "traefik.http.routers.mysql-exporter.entrypoints=websecure"
+      - "traefik.http.routers.mysql-exporter.tls=true"
+      - "traefik.http.routers.mysql-exporter.tls.certresolver=myresolver"
 
   ftp:
     container_name: ftp
