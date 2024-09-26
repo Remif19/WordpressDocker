@@ -8,56 +8,47 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Copy repository to server
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "."
-        target: "~/repo"
+      - name: Copy repository to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "."
+          target: "~/repo"
 
-    - name: Execute commands over SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd ~/repo
-          sudo bash -c '
-            export WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}
-            export WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}
-            export WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}
-            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-            export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            export FTP_PASS=${{ secrets.FTP_PASS }}
-            export FTP_USER=${{ secrets.FTP_USER }}
+      - name: Create .env file on the server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/repo
+            echo "Creating .env file..."
+            cat > .env <<EOF
+            WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}
+            WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}
+            WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            FTP_PASS=${{ secrets.FTP_PASS }}
+            FTP_USER=${{ secrets.FTP_USER }}
+            EOF
+
+      - name: Execute commands over SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/repo
             docker-compose down
             docker-compose up -d --build
-          '
-
-    - name: Stop and restart Docker containers
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd ~/repo
-          sudo bash -c '
-            export WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}
-            export WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}
-            export WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}
-            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-            export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            export FTP_PASS=${{ secrets.FTP_PASS }}
-            export FTP_USER=${{ secrets.FTP_USER }}
             docker-compose down
             docker-compose up -d
-          '
