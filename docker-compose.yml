@@ -71,7 +71,27 @@ services:
     volumes:
       - wordpress_data:/home/user
 
+  ispconfig:
+    image: cyberman54/ispconfig-docker
+    container_name: ispconfig
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ispconfig_db
+    ports:
+      - "8080:8080"
+    volumes:
+      - /path/to/ispconfig_data:/var/www
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ispconfig.rule=Host(`ispconfig.falcatiremi.com`)"
+      - "traefik.http.routers.ispconfig.entrypoints=websecure"
+      - "traefik.http.routers.ispconfig.tls=true"
+      - "traefik.http.routers.ispconfig.tls.certresolver=myresolver"
+
 volumes:
   wordpress_data:
   db_data:
   traefik-certificates:
+  ispconfig_data:
