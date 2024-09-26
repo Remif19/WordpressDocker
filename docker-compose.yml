@@ -25,6 +25,7 @@ services:
       - "traefik.http.routers.api.tls.certresolver=myresolver"
       - "traefik.http.middlewares.auth.basicauth.users=admin:$(htpasswd -nbB admin YOUR_PASSWORD | cut -d ':' -f 2)"  # Remplacez par votre mot de passe
       - "traefik.http.routers.api.middlewares=auth"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
 
   wordpress:
     container_name: wordpress
