@@ -1,0 +1,59 @@
+services:
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=monitoring@verywell.digital"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik-certificates:/letsencrypt"
+
+  wordpress:
+    image: wordpress:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.rule=Host(`wordpress.verywell.dev`)"
+      - "traefik.http.routers.wordpress.entrypoints=websecure"
+      - "traefik.http.routers.wordpress.tls=true"
+      - "traefik.http.routers.wordpress.tls.certresolver=myresolver"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: user ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: password ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: wordpress_db ${WORDPRESS_DB_NAME}
+    volumes:
+      - wordpress_data:/var/www/html    
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: wordpress_db ${WORDPRESS_DB_NAME}
+      MYSQL_USER: user ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: password ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: root_password ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+
+  ftp:
+    image: garethflowers/ftp-server
+    environment:
+      - FTP_PASS= ${FTP_PASS}
+      - FTP_USER= ${FTP_USER}
+    ports:
+      - '20-21:20-21/tcp'
+      - '40000-40009:40000-40009/tcp'
+    volumes:
+      - wordpress_data:/home/user
+
+volumes:
+  wordpress_data:
+  db_data:
+  traefik-certificates:
