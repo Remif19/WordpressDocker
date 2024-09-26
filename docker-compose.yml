@@ -72,10 +72,9 @@ services:
       - wordpress_data:/home/user
 
   mysql-exporter:
-    container_name: mysql-exporter
     image: prom/mysqld-exporter
-    environment:
-      - DATA_SOURCE_NAME=${WORDPRESS_DB_USER}:${WORDPRESS_DB_PASSWORD}@tcp(db:3306)/${WORDPRESS_DB_NAME}
+    volumes:
+      - ./my.cnf:/etc/mysql/my.cnf
     ports:
       - "9104:9104"
 
