@@ -26,8 +26,6 @@ services:
       - "traefik.http.services.api.loadbalancer.server.port=80"
       - "traefik.http.routers.traefik.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-    networks:
-      - monitoring
 
   wordpress:
     container_name: wordpress
@@ -47,8 +45,6 @@ services:
       - wordpress_data:/var/www/html
     depends_on:
       - db
-    networks:
-      - monitoring
 
   db:
     container_name: db
@@ -62,8 +58,6 @@ services:
       - '3306:3306'
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - monitoring
 
   mysql-exporter:
     container_name: mysql-exporter
@@ -72,8 +66,6 @@ services:
       - DATA_SOURCE_NAME=${WORDPRESS_DB_USER}:${WORDPRESS_DB_PASSWORD}@tcp(db:3306)/${WORDPRESS_DB_NAME}
     ports:
       - "9104:9104"
-    networks:
-      - monitoring
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mysql-exporter.rule=Host(`mysql-exporter.${WORDPRESS_DOMAIN}`)"
@@ -92,8 +84,6 @@ services:
       - '40000-40009:40000-40009/tcp'
     volumes:
       - wordpress_data:/home/user
-    networks:
-      - monitoring
 
   prometheus:
     image: prom/prometheus:latest
@@ -110,8 +100,6 @@ services:
       - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
     depends_on:
       - mysql-exporter
-    networks:
-      - monitoring
 
   grafana:
     image: grafana/grafana:latest
@@ -130,14 +118,9 @@ services:
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.routers.grafana.tls.certresolver=myresolver"
-    networks:
-      - monitoring
 
 volumes:
   wordpress_data:
   db_data:
   traefik-certificates:
   grafana_data:
-
-networks:
-  monitoring:
