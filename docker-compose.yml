@@ -21,7 +21,8 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`traefik.falcatiremi.com`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls=true"
-      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.services.api.loadbalancer.server.port=80"
 
   wordpress:
     container_name: wordpress
