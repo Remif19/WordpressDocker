@@ -137,3 +137,7 @@ volumes:
   db_data:
   traefik-certificates:
   grafana_data:
+
+networks:
+  monitoring:
+    external: true
