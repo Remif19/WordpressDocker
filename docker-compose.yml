@@ -72,6 +72,7 @@ services:
       - wordpress_data:/home/user
 
   mysql-exporter:
+    container_name: mysql-exporter
     image: prom/mysqld-exporter
     volumes:
       - ./my.cnf:/etc/mysql/my.cnf
