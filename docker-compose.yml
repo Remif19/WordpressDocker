@@ -71,14 +71,6 @@ services:
     volumes:
       - wordpress_data:/home/user
 
-  mysql-exporter:
-    container_name: mysql-exporter
-    image: prom/mysqld-exporter
-    volumes:
-      - ./my.cnf:/etc/mysql/my.cnf
-    ports:
-      - "9104:9104"
-
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
