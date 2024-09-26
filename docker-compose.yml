@@ -65,6 +65,12 @@ services:
       - DATA_SOURCE_NAME=${WORDPRESS_DB_USER}:${WORDPRESS_DB_PASSWORD}@tcp(db:3306)/${WORDPRESS_DB_NAME}
     ports:
       - "9104:9104"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`mysqlexporter.${WORDPRESS_DOMAIN}`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
     networks:
       - default
 
