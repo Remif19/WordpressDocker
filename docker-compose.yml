@@ -22,7 +22,7 @@ services:
     image: wordpress:latest
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wordpress.rule=Host(`docker.verywell.dev`)"
+      - "traefik.http.routers.wordpress.rule=Host(`${WORDPRESS_DOMAIN}`)"
       - "traefik.http.routers.wordpress.entrypoints=websecure"
       - "traefik.http.routers.wordpress.tls=true"
       - "traefik.http.routers.wordpress.tls.certresolver=myresolver"

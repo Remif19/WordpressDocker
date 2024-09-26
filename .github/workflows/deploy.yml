@@ -56,6 +56,7 @@ jobs:
             MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
             FTP_PASS=${{ secrets.FTP_PASS }}
             FTP_USER=${{ secrets.FTP_USER }}
+            WORDPRESS_DOMAIN=${{ secrets.WORDPRESS_DOMAIN }}
             EOF
 
       - name: Execute commands over SSH
