@@ -59,24 +59,6 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  mysql-exporter:
-    container_name: mysql-exporter
-    image: bitnami/mysqld-exporter
-    environment:
-      - MYSQL_USER=${WORDPRESS_DB_USER}
-      - MYSQL_PASSWORD=${WORDPRESS_DB_PASSWORD}
-      - MYSQL_HOST=db
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=${WORDPRESS_DB_NAME}
-    ports:
-      - "9104:9104"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mysql-exporter.rule=Host(`mysql-exporter.${WORDPRESS_DOMAIN}`)"
-      - "traefik.http.routers.mysql-exporter.entrypoints=websecure"
-      - "traefik.http.routers.mysql-exporter.tls=true"
-      - "traefik.http.routers.mysql-exporter.tls.certresolver=myresolver"
-
   ftp:
     container_name: ftp
     image: garethflowers/ftp-server
@@ -102,8 +84,6 @@ services:
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
-    depends_on:
-      - mysql-exporter
 
   grafana:
     image: grafana/grafana:latest
