@@ -47,8 +47,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/repo
             sudo su
+            cd ~/repo
             docker-compose down
             docker-compose up -d --build
             docker-compose down
@@ -61,5 +61,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            sudo su
             cd ~/repo
             rm -f .env
