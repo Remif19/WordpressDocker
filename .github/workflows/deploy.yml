@@ -29,6 +29,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          cd ~/repo
           echo "Switching to super user"
           sudo su
           echo "Stopping old containers"
@@ -51,6 +52,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          cd ~/repo
           sudo su
           docker-compose down
           docker-compose up -d
