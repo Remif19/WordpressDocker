@@ -3,31 +3,19 @@ services:
     container_name: traefik
     image: traefik:v2.5
     command:
-      - "--api.insecure=false"
-      - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.dashboard.address=:8443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=monitoring@verywell.digital"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
-      - "8443:8443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-certificates:/letsencrypt"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`${WORDPRESS_DOMAIN}`)"
-      - "traefik.http.routers.api.entrypoints=dashboard"
-      - "traefik.http.routers.api.tls=true"
-      - "traefik.http.routers.api.tls.certresolver=myresolver"
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$(htpasswd -nbB admin YOUR_PASSWORD | cut -d ':' -f 2)"
-      - "traefik.http.routers.api.middlewares=auth"
-      - "traefik.http.services.api.loadbalancer.server.port=8080"
 
   wordpress:
     container_name: wordpress
@@ -72,6 +60,20 @@ services:
       - '40000-40009:40000-40009/tcp'
     volumes:
       - wordpress_data:/home/user
+
+  traefik-dashboard:
+    container_name: traefik-dashboard
+    image: traefik:v2.5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${WORDPRESS_DOMAIN}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+    command:
+      - "--api.insecure=true"
+    ports:
+      - "8080:8080"
 
 volumes:
   wordpress_data:
