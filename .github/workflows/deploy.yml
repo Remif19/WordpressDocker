@@ -47,12 +47,11 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo su
             cd ~/repo
-            docker-compose down
-            docker-compose up -d --build
-            docker-compose down
-            docker-compose up -d
+            sudo docker-compose down
+            sudo docker-compose up -d --build
+            sudo docker-compose down
+            sudo docker-compose up -d
       
       - name: Clean up .env file
         uses: appleboy/ssh-action@master
@@ -61,6 +60,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo su
             cd ~/repo
-            rm -f .env
+            sudo rm -f .env
