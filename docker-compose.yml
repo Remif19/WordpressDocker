@@ -71,8 +71,6 @@ services:
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
-    networks:
-      - default
 
   ftp:
     container_name: ftp
