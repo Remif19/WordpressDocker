@@ -30,20 +30,17 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ~/repo
-          echo "Switching to super user"
-          sudo su
-          echo "Stopping old containers"
-          docker-compose down
-          echo "Starting new containers"
-          WORDPRESS_DB_HOST=db \
-          WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }} \
-          WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }} \
-          WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }} \
-          MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-          FTP_PASS=${{ secrets.FTP_PASS }} \
-          FTP_USER=${{ secrets.FTP_USER }} \
-          docker-compose up -d --build
+          sudo bash -c '
+            export WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}
+            export WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}
+            export WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}
+            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            export FTP_PASS=${{ secrets.FTP_PASS }}
+            export FTP_USER=${{ secrets.FTP_USER }}
+            docker-compose down
+            docker-compose up -d --build
+          '
 
     - name: Stop and restart Docker containers
       uses: appleboy/ssh-action@master
@@ -53,6 +50,14 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ~/repo
-          sudo su
-          docker-compose down
-          docker-compose up -d
+          sudo bash -c '
+            export WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}
+            export WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}
+            export WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}
+            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            export FTP_PASS=${{ secrets.FTP_PASS }}
+            export FTP_USER=${{ secrets.FTP_USER }}
+            docker-compose down
+            docker-compose up -d
+          '
