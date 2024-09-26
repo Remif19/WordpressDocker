@@ -28,9 +28,9 @@ services:
       - "traefik.http.routers.wordpress.tls.certresolver=myresolver"
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: password
+      WORDPRESS_DB_NAME: wordpress_db
     volumes:
       - wordpress_data:/var/www/html
     depends_on:
@@ -40,10 +40,10 @@ services:
     container_name: db
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
-      MYSQL_USER: ${WORDPRESS_DB_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root_password
     ports:
       - '3306:3306'
     volumes:
