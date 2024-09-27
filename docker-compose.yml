@@ -45,6 +45,16 @@ services:
       - wordpress_data:/var/www/html
     depends_on:
       - db
+    entrypoint: >
+      bash -c "docker-entrypoint.sh &&
+      wp plugin install akismet --activate &&
+      wp plugin install wordfence --activate"
+
+  wpcli:
+    image: wordpress:cli
+    volumes:
+      - wordpress_data:/var/www/html
+    entrypoint: wp
 
   db:
     container_name: db
