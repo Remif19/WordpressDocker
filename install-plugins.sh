@@ -6,7 +6,7 @@ set -e
 docker-entrypoint.sh apache2-foreground &
 
 # Attendre que WordPress soit prêt
-until $(curl --output /dev/null --silent --head --fail http://localhost:80); do
+until $(curl --output /dev/null --silent --head --fail http://falcatiremi.com:80); do
     printf '.'
     sleep 5
 done
