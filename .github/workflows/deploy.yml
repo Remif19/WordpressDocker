@@ -60,6 +60,16 @@ jobs:
             TRAEFIK_DOMAIN=${{ secrets.TRAEFIK_DOMAIN }}
             EOF
 
+      - name: Set executable permission for install-plugins.sh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/repo
+            chmod +x install-plugins.sh
+
       - name: Execute commands over SSH
         uses: appleboy/ssh-action@master
         with:
