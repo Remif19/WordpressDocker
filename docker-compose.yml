@@ -89,7 +89,7 @@ services:
       - portainer_data:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.falcatiremi.com`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${WORDPRESS_DOMAIN}`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.routers.portainer.tls.certresolver=myresolver"
