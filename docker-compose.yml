@@ -54,6 +54,27 @@ services:
       - wordpress_data:/var/www/html
     entrypoint: wp
 
+  crowdsec:
+    image: crowdsecurity/crowdsec
+    container_name: crowdsec
+    restart: unless-stopped
+    volumes:
+      - crowdsec_data:/var/lib/crowdsec
+      - /var/log:/var/log
+    ports:
+      - "8080:8080"
+
+  crowdsec-ui:
+    image: crowdsecurity/crowdsec-ui
+    container_name: crowdsec-ui
+    restart: unless-stopped
+    depends_on:
+      - crowdsec
+    ports:
+      - "8081:8080"  
+    environment:
+      - CROWDSEC_API_URL=http://crowdsec.${WORDPRESS_DOMAIN}:8080
+
   db:
     container_name: db
     image: mysql:latest
@@ -116,3 +137,4 @@ volumes:
   db_data:
   traefik-certificates:
   grafana_data:
+  crowdsec_data:
