@@ -8,3 +8,6 @@ done
 wp plugin install jetpack --activate --path="/var/www/html" --allow-root
 wp plugin install woocommerce --activate --path="/var/www/html" --allow-root
 wp plugin install wordfence --activate --path="/var/www/html" --allow-root
+
+wp rewrite structure '/%postname%/' --hard
+wp rewrite flush --hard
