@@ -131,3 +131,4 @@ volumes:
   db_data:
   traefik-certificates:
   grafana_data:
+  portainer_data:
