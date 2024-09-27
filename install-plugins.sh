@@ -1,13 +1,33 @@
 #!/bin/bash
 
-until wp db check --path="/var/www/html" --allow-root; do
-  echo "Waiting for database to be ready..."
-  sleep 5
+set -e
+
+# Exécute le script d'entrée par défaut de WordPress
+docker-entrypoint.sh apache2-foreground &
+
+# Attendre que WordPress soit prêt
+until $(curl --output /dev/null --silent --head --fail http://localhost:80); do
+    printf '.'
+    sleep 5
 done
 
-wp plugin install jetpack --activate --path="/var/www/html" --allow-root
-wp plugin install woocommerce --activate --path="/var/www/html" --allow-root
-wp plugin install wordfence --activate --path="/var/www/html" --allow-root
+# Installer et activer les plugins
+echo "Installation des plugins..."
 
-wp rewrite structure '/%postname%/' --hard
-wp rewrite flush --hard
+# Liste des plugins à installer
+plugins=(
+    "akismet"
+    "wordfence"
+    "yoast-seo"
+)
+
+for plugin in "${plugins[@]}"; do
+    echo "Installation et activation de $plugin..."
+    wp plugin install "$plugin" --activate --allow-root
+done
+
+# Mettre à jour la base de données si nécessaire
+wp core update-db --allow-root
+
+# Attendre que le conteneur soit terminé
+wait
